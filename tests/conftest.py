@@ -3,7 +3,7 @@ import pytest
 from app.database import Base
 from app.dependency import get_db
 from typing import Generator
-from main import app
+from main import app    
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
