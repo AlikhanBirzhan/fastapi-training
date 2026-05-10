@@ -11,7 +11,7 @@ from app.repository import wallets as wallets_repository
 from app.service import exchange_service
 
 async def get_total_balance(db: Session, current_user: User) -> TotalBalance:
-    wallets = wallets_repository.get_all_wallets(db, User.id)
+    wallets = wallets_repository.get_all_wallets(db, current_user.id)
     total_balance = Decimal(0)
 
     for wallet in wallets:
