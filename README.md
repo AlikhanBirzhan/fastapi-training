@@ -96,9 +96,7 @@ http://localhost:8000/docs
 
 ### Скриншот документации
 
-```md id="clean1"
 ![Swagger UI](./assets/swagger-ui.png)
-```
 
 ---
 
