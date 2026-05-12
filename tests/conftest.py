@@ -1,10 +1,10 @@
 import pytest
-
 from app.database import Base
 from app.dependency import get_db
+from app.models import User
+from app.service.users import hash_password, create_access_token
 from typing import Generator
-from main import app    
-
+from main import app
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from fastapi.testclient import TestClient
@@ -12,7 +12,7 @@ from fastapi.testclient import TestClient
 TEST_DATABASE_URL = "sqlite:///./test.db"
 
 test_engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
-TestSessionLocal = sessionmaker(bind=test_engine, autocommit=False,autoflush=False)
+TestSessionLocal = sessionmaker(bind=test_engine, autocommit=False, autoflush=False)
 
 def get_test_db() -> Generator[Session, None, None]:
     db = TestSessionLocal()
@@ -40,3 +40,11 @@ def db_session() -> Generator[Session, None, None]:
         yield db
     finally:
         db.close()
+
+@pytest.fixture
+def auth_headers(db_session: Session):
+    user = User(login="testuser", hashed_password=hash_password("testpass"))
+    db_session.add(user)
+    db_session.commit()
+    token = create_access_token("testuser")
+    return {"Authorization": f"Bearer {token}"}
