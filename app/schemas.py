@@ -4,7 +4,6 @@ from pydantic import BaseModel, Field, field_validator
 from app.enum import CurrencyEnum
 
 # --- Auth схемы ---
-
 class UserRegisterRequest(BaseModel):
     login: str = Field(..., max_length=127)
     password: str = Field(..., min_length=6, max_length=255)
@@ -18,7 +17,6 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
 
 # --- User схемы ---
-
 class UserRequest(BaseModel):
     login: str = Field(..., max_length=127)
 
@@ -28,7 +26,6 @@ class UserResponse(BaseModel):
     login: str
 
 # --- Wallet схемы ---
-
 class CreateWalletRequest(BaseModel):
     name: str = Field(..., max_length=127)
     initial_balance: Decimal = 0
@@ -55,7 +52,6 @@ class WalletResponse(BaseModel):
     currency: CurrencyEnum
 
 # --- Operation схемы ---
-
 class OperationRequest(BaseModel):
     wallet_name: str = Field(..., max_length=127)
     amount: Decimal
@@ -84,6 +80,13 @@ class OperationResponse(BaseModel):
     category: str | None
     subcategory: str | None
     created_at: datetime
+
+class PaginatedOperationsResponse(BaseModel):
+    items: list[OperationResponse]
+    total: int
+    page: int
+    limit: int
+    pages: int
 
 class TransferCreateSchema(BaseModel):
     from_wallet_id: int
