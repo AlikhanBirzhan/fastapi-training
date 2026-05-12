@@ -97,7 +97,7 @@ http://localhost:8000/docs
 ### Скриншот документации
 
 ```md
-![Swagger UI](./assets/swagger-ui.png)
+![Swagger UI](assets/swagger-ui.png)
 ```
 
 ---
