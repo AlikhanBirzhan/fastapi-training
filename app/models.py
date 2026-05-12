@@ -1,7 +1,7 @@
 from decimal import Decimal
-from datetime import datetime, timezone  # Добавляем timezone — для корректной работы с временными зонами в PostgreSQL
+from datetime import datetime, timezone
 
-from sqlalchemy import ForeignKey, Numeric  # Добавляем Numeric — явно указываем тип для Decimal, иначе PostgreSQL может выбрать неподходящий тип
+from sqlalchemy import ForeignKey, Numeric
 from sqlalchemy.orm import Mapped, mapped_column
 from app.database import Base
 from app.enum import CurrencyEnum
@@ -11,6 +11,7 @@ class User(Base):
     __tablename__ = 'user'
     id: Mapped[int] = mapped_column(primary_key=True)
     login: Mapped[str] = mapped_column(unique=True)
+    hashed_password: Mapped[str]
 
 
 class Wallet(Base):
