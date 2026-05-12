@@ -96,8 +96,8 @@ http://localhost:8000/docs
 
 ### Скриншот документации
 
-```md
-![Swagger UI](assets/swagger-ui.png)
+```md id="clean1"
+![Swagger UI](https://github.com/AlikhanBirzhan/finance-tracker-api/blob/main/assets/swagger-ui.png?raw=true)
 ```
 
 ---
