@@ -1,127 +1,192 @@
 # Finance Tracker API
 
-REST API для управления личными финансами с мультивалютной поддержкой. Учебный проект.
+REST API для управления личными финансами и мультивалютными кошельками.  
+Проект разработан на FastAPI с использованием PostgreSQL, Docker, JWT-аутентификации и GitHub Actions CI.
 
-## Стек
+![CI](https://github.com/AlikhanBirzhan/finance-tracker-api/actions/workflows/ci.yml/badge.svg)
 
-- **FastAPI** — веб-фреймворк
-- **SQLAlchemy** — ORM
-- **PostgreSQL** — база данных
-- **Pydantic v2** — валидация данных
-- **Docker** — контейнеризация
+---
 
 ## Функционал
 
-- Регистрация пользователей и авторизация через токен
-- Создание кошельков с выбором валюты (USD, EUR, KZT)
+- JWT-аутентификация
+- Управление кошельками
 - Пополнение и списание средств
-- Переводы между кошельками с автоматической конвертацией по курсу
-- История операций с фильтрацией по кошельку и датам
-- Асинхронный клиент для получения курсов валют (httpx)
+- Переводы между кошельками
+- Поддержка нескольких валют (USD, EUR, KZT)
+- Конвертация валют через внешний API
+- История операций с фильтрацией
+- Пагинация
+- Логирование
+- Alembic миграции
+- Автоматические тесты с Pytest
+- Docker-поддержка
+- GitHub Actions CI pipeline
 
-## Запуск через Docker
+---
 
-1. Создать `.env` файл в корне проекта:
+## Стек технологий
 
-```ini
-DATABASE_URL=postgresql://postgres:postgres@db:5432/finance_tracker
-POSTGRES_DB=finance_tracker
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
+- Python 3.12
+- FastAPI
+- PostgreSQL
+- SQLAlchemy
+- Alembic
+- Pydantic v2
+- JWT (python-jose)
+- Docker & Docker Compose
+- Pytest
+- GitHub Actions
+- httpx
+
+---
+
+## Архитектура проекта
+
+Проект построен с разделением на слои:
+
+```text
+app/
+├── api/          # Роутеры и эндпоинты
+├── repository/   # Работа с базой данных
+├── service/      # Бизнес-логика
+├── models.py     # SQLAlchemy модели
+├── schemas.py    # Pydantic схемы
+├── database.py   # Конфигурация базы данных
 ```
 
-2. Запустить контейнеры:
-
-```bash
-git clone https://github.com/AlikhanBirzhan/finance-tracker-api
-cd finance-tracker-api
-docker compose up --build
-```
-
-3. Открыть документацию: [http://localhost:8000/docs](http://localhost:8000/docs)
-
-## Запуск локально
-
-1. Убедиться, что PostgreSQL запущен локально и создана база данных `finance_tracker`
-
-2. Создать `.env` файл в корне проекта:
-
-```ini
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/finance_tracker
-POSTGRES_DB=finance_tracker
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-```
-
-3. Установить зависимости и запустить:
-
-```bash
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-uvicorn main:app --reload
-```
-
-## Авторизация
-
-API использует токен-авторизацию. Токен — это логин пользователя, передаётся в заголовке:
-
-```
-Authorization: Bearer <login>
-```
-
-Пример — сначала создать пользователя, затем использовать его логин как токен:
-
-```bash
-# 1. Создать пользователя
-curl -X POST http://localhost:8000/api/v1/users \
-  -H 'Content-Type: application/json' \
-  -d '{"login": "user1"}'
-
-# 2. Использовать логин как токен
-curl http://localhost:8000/api/v1/wallets \
-  -H 'Authorization: Bearer user1'
-```
+---
 
 ## API эндпоинты
 
-### Пользователи
+### Авторизация
 
-| Метод | Путь | Описание |
-|-------|------|----------|
-| POST | `/api/v1/users` | Создать пользователя |
+| Метод | Endpoint | Описание |
+|---|---|---|
+| POST | `/api/v1/auth/register` | Регистрация пользователя |
+| POST | `/api/v1/auth/login` | Авторизация пользователя |
 | GET | `/api/v1/users/me` | Получить текущего пользователя |
 
 ### Кошельки
 
-| Метод | Путь | Описание |
-|-------|------|----------|
+| Метод | Endpoint | Описание |
+|---|---|---|
 | GET | `/api/v1/balance` | Получить общий баланс |
-| GET | `/api/v1/wallets` | Список всех кошельков |
+| GET | `/api/v1/wallets` | Получить список кошельков |
 | POST | `/api/v1/wallets` | Создать кошелёк |
 
 ### Операции
 
-| Метод | Путь | Описание |
-|-------|------|----------|
-| POST | `/api/v1/operations/income` | Пополнить кошелёк |
-| POST | `/api/v1/operations/expense` | Списать средства |
+| Метод | Endpoint | Описание |
+|---|---|---|
+| POST | `/api/v1/operations/income` | Пополнение кошелька |
+| POST | `/api/v1/operations/expense` | Списание средств |
 | POST | `/api/v1/operations/transfer` | Перевод между кошельками |
-| GET | `/api/v1/operations` | История операций |
+| GET | `/api/v1/operations/operations` | История операций |
 
-## Структура проекта
+---
 
+## Swagger UI
+
+### Документация API
+
+```text
+http://localhost:8000/docs
 ```
-.
-├── app/
-│   ├── api/          # Роутеры и эндпоинты
-│   ├── repository/   # Работа с БД
-│   ├── service/      # Бизнес-логика
-│   ├── models.py     # SQLAlchemy модели
-│   └── schemas.py    # Pydantic схемы
-├── tests/            # Тесты
-├── main.py
-├── Dockerfile
-├── docker-compose.yml
-└── .env.example      # Пример переменных окружения
+
+### Скриншот документации
+
+```md
+<p align="center">
+  <img src="./screenshots/swagger-ui.png" width="900"/>
+</p>
 ```
+
+---
+
+## Запуск через Docker
+
+### 1. Клонировать репозиторий
+
+```bash
+git clone https://github.com/AlikhanBirzhan/finance-tracker-api
+cd finance-tracker-api
+```
+
+---
+
+### 2. Создать `.env`
+
+```env
+POSTGRES_DB=finance_tracker
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+
+DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/finance_tracker
+
+SECRET_KEY=your_secret_key
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+```
+
+---
+
+### 3. Запустить контейнеры
+
+```bash
+docker compose up --build
+```
+
+Swagger UI будет доступно по адресу:
+
+```text
+http://localhost:8000/docs
+```
+
+---
+
+## Миграции базы данных
+
+Применить миграции:
+
+```bash
+alembic upgrade head
+```
+
+Создать новую миграцию:
+
+```bash
+alembic revision --autogenerate -m "migration_name"
+```
+
+---
+
+## Запуск тестов
+
+```bash
+pytest -v
+```
+
+Тесты включают:
+- тесты авторизации
+- тесты операций
+
+---
+
+## CI Pipeline
+
+GitHub Actions автоматически:
+- устанавливает зависимости
+- запускает тесты
+- проверяет проект при push и pull request
+
+---
+
+## Логирование
+
+В проекте используется встроенный модуль logging для:
+- логирования запуска и остановки приложения
+- отслеживания обработки запросов
+- логирования ошибок
+
+---
