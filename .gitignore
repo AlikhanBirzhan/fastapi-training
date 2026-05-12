@@ -6,3 +6,4 @@ __pycache__/
 .vscode/
 *.db
 .pytest_cache/
+*.sqlite3

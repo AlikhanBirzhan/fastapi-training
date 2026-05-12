@@ -1,11 +1,11 @@
 from decimal import Decimal
-from datetime import datetime
+from datetime import datetime, timezone  # Добавляем timezone — для корректной работы с временными зонами в PostgreSQL
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, Numeric  # Добавляем Numeric — явно указываем тип для Decimal, иначе PostgreSQL может выбрать неподходящий тип
 from sqlalchemy.orm import Mapped, mapped_column
-
 from app.database import Base
 from app.enum import CurrencyEnum
+
 
 class User(Base):
     __tablename__ = 'user'
@@ -15,21 +15,20 @@ class User(Base):
 
 class Wallet(Base):
     __tablename__ = 'wallet'
-
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
-    balance: Mapped[Decimal]
+    balance: Mapped[Decimal] = mapped_column(Numeric(precision=18, scale=2))
     user_id: Mapped[int] = mapped_column(ForeignKey('user.id'), nullable=False)
-    currency: Mapped[CurrencyEnum] 
+    currency: Mapped[CurrencyEnum]
+
 
 class Operation(Base):
     __tablename__ = 'operation'
-
     id: Mapped[int] = mapped_column(primary_key=True)
     wallet_id: Mapped[int] = mapped_column(ForeignKey("wallet.id"))
     type: Mapped[str]
-    amount: Mapped[Decimal]
+    amount: Mapped[Decimal] = mapped_column(Numeric(precision=18, scale=2))
     currency: Mapped[CurrencyEnum]
     category: Mapped[str | None] = mapped_column(default=None)
     subcategory: Mapped[str | None] = mapped_column(default=None)
-    created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now())
+    created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
