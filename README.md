@@ -1,7 +1,6 @@
 # Finance Tracker API
 
-REST API для управления личными финансами и мультивалютными кошельками.  
-Проект разработан на FastAPI с использованием PostgreSQL, Docker, JWT-аутентификации и GitHub Actions CI.
+REST API для отслеживания личных финансов с поддержкой нескольких валют, разработанный для демонстрации навыков бэкенд разработки (FastAPI, PostgreSQL, Docker, CI/CD).
 
 ![CI](https://github.com/AlikhanBirzhan/finance-tracker-api/actions/workflows/ci.yml/badge.svg)
 
